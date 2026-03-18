@@ -1,0 +1,282 @@
+\section{Methods}\label{section:methods}
+
+\subsection{Initial definitions}
+
+First, I introduce some basic components as part of QML \parencite{nielsen2000qci,rieffel2011gentle,olivares2025qc}. One-qubit bases $\ket{0}$ and $\ket{1}$ are defined in \cref{single-qubits}.
+
+\begin{equation}\label{single-qubits}
+    \ket{0} = \begin{pmatrix}
+        1\\0
+    \end{pmatrix}\quad
+    \ket{1} = \begin{pmatrix}
+        0\\1
+    \end{pmatrix}
+\end{equation}
+
+Using these one-qubit bases, I can write quantum states as a linear combination as shown in \cref{quantum-states}, or using the Bloch-sphere representation rewritten as in \cref{bloch-sphere}
+\begin{equation}\label{quantum-states}
+    \ket{\psi} = \alpha\ket{0}+\beta\ket{1}
+\end{equation}
+\begin{equation}\label{bloch-sphere}
+    \ket{\psi}=\cos\left(\frac{\theta}{2}\right)\ket{0}+\sin\left(\frac{\theta}{2}\right)e^{i\phi}\ket{1}
+\end{equation}
+
+Quantum algorithms are typically formulated using Pauli operators $\sigma_x,\space\sigma_y,\space\sigma_z$ as seen in \cref{pauli-matrices} and a small universal set of quantum gates that act on qubits. The Pauli matrices together with the identity $\textbf{I}$, form a convenient operator basis for expressing quantum Hamiltonians and observables. 
+\begin{equation}\label{pauli-matrices}
+    \sigma_x=\begin{pmatrix}
+        0&1\\1&0
+    \end{pmatrix}\quad
+    \sigma_y=\begin{pmatrix}
+        0&-i\\i&0
+    \end{pmatrix}\quad
+    \sigma_z=\begin{pmatrix}
+        1&0\\0&-1
+    \end{pmatrix}
+\end{equation}
+
+In practical implementations, these operators are realized through elementary gates such as the Hadamard gate ($H$), which creates superposition, the phase gate ($S$), which introduces controlled phase shifts, and the CNOT gate, which generates entanglement between qubits. All as seen in \cref{quantum-gates}. These gates form a standard set of building blocks for constructing quantum circuits and implementing algorithms such as the VQE.
+\begin{equation}\label{quantum-gates}
+\begin{array}{cc}
+H = \frac{1}{\sqrt{2}}
+\begin{pmatrix}
+1 & 1\\
+1 & -1
+\end{pmatrix}
+&
+S =
+\begin{pmatrix}
+1 & 0\\
+0 & i
+\end{pmatrix}
+\\[12pt]
+\multicolumn{2}{c}{
+\text{CNOT} =
+\begin{pmatrix}
+1 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & 0 & 1\\
+0 & 0 & 1 & 0
+\end{pmatrix}}
+\end{array}
+\end{equation}
+
+\subsection{Tensor products and two-qubit states}
+When describing systems of multiple qubits, the Hilbert space of the composite system is constructed using tensor (Kronecker) products of the individual qubit states as seen in \cref{kronecker-products}. This allows basis states of multi-qubit systems to be written as products of the single-qubit computational basis states $\ket{0}$ and $\ket{1}$. For a two-qubit system the computational basis therefore consists of the four states $\{\ket{00},\ket{01},\ket{10},\ket{11}\}$, obtained through tensor products of the single-qubit states.
+\begin{equation}\label{kronecker-products}
+\begin{aligned}
+\ket{00} &= \ket{0} \otimes \ket{0} &
+\ket{01} &= \ket{0} \otimes \ket{1} \\
+\ket{10} &= \ket{1} \otimes \ket{0} &
+\ket{11} &= \ket{1} \otimes \ket{1}
+\end{aligned}
+\end{equation}
+
+Certain superpositions of these two-qubit basis states form maximally entangled states known as Bell states as seen in \cref{bell-states}. These states play an important role in quantum information theory and serve as fundamental examples of quantum entanglement between two qubits \parencite{einstein1935epr,nielsen2000qci}.
+\begin{equation}\label{bell-states}
+\begin{aligned}
+\ket{\Phi^+} &= \frac{\ket{00} + \ket{11}}{\sqrt{2}} &
+\ket{\Phi^-} &= \frac{\ket{00} - \ket{11}}{\sqrt{2}} \\
+\ket{\Psi^+} &= \frac{\ket{01} + \ket{10}}{\sqrt{2}} &
+\ket{\Psi^-} &= \frac{\ket{01} - \ket{10}}{\sqrt{2}}
+\end{aligned}
+\end{equation}
+
+For composite quantum systems, operators acting on multiple qubits are constructed using tensor products of single-qubit operators. If an operator $A$ acts on the first qubit and an operator $B$ acts on the second qubit, the combined operator acting on the two-qubit system is written as $A \otimes B$. In this way, Hamiltonians and quantum gates for multi-qubit systems can be expressed in terms of tensor products of Pauli matrices and the identity operator.
+
+As an example, the operator $I \otimes \sigma_x$ flips the second qubit while leaving the first qubit unchanged. In the computational basis $\{\ket{00},\ket{01},\ket{10},\ket{11}\}$ this operator is given in \cref{I-otimes-sigma}.
+\begin{equation}\label{I-otimes-sigma}
+I \otimes \sigma_x =
+\begin{pmatrix}
+0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 0 \\
+0 & 0 & 0 & 1 \\
+0 & 0 & 1 & 0
+\end{pmatrix}.
+\end{equation}
+
+Similarly, tensor products between Pauli operators act on both qubits simultaneously. For example, the operator $\sigma_x \otimes \sigma_x$ flips both qubits as seen in \cref{sigmax-otimes-sigmax}.
+\begin{equation}\label{sigmax-otimes-sigmax}
+\sigma_x \otimes \sigma_x =
+\begin{pmatrix}
+0 & 0 & 0 & 1 \\
+0 & 0 & 1 & 0 \\
+0 & 1 & 0 & 0 \\
+1 & 0 & 0 & 0
+\end{pmatrix}.
+\end{equation}
+
+While pure quantum states are written as state vectors, a more general description is given by density matrices. For a pure state $\ket{\psi}$ the density operator is given in \cref{density-matrix} and for a statistical ensemble $\{\ket{\psi_i},p_i\}$ it becomes as in \cref{mixed-density}.
+\begin{equation}\label{density-matrix}
+\rho = \ket{\psi}\bra{\psi},
+\end{equation}
+\begin{equation}\label{mixed-density}
+\rho = \sum_i p_i \ket{\psi_i}\bra{\psi_i}.
+\end{equation}
+
+For bipartite systems the state of a subsystem is obtained via the partial trace, in  \cref{partial-trace}, which is central when analysing entanglement. A standard measure of quantum uncertainty is the von Neumann entropy in \cref{von-neumann-entropy}, which vanishes for pure states and is positive for mixed states.
+\begin{equation}\label{partial-trace}
+\rho_A = \mathrm{Tr}_B(\rho_{AB}),
+\end{equation}
+\begin{equation}\label{von-neumann-entropy}
+\mathcal{S}(\rho) = -\mathrm{Tr}(\rho \log \rho),
+\end{equation}
+
+\subsection{Eigenvalue analysis}
+
+The stationary Schrödinger equation defines the energy spectrum of a quantum system. The Hamiltonian operator acting on a quantum state produces the same state scaled by its corresponding energy eigenvalue, as seen in \cref{h-psi-e-psi}, where $\mathcal{H}$ is the Hamiltonian and $E$ the energy eigenvalue and $\ket{\psi}$ the corresponding eigenstate.
+\begin{equation}\label{h-psi-e-psi}
+    \mathcal{H}\ket{\psi}=E\ket{\psi}
+\end{equation}
+
+In the computational basis the Hamiltonian can be represented as a matrix acting on the state vector, and for a two-level system this can take the form in \cref{hamiltonian-vector}. Here the diagonal elements correspond to energies of basis states while the off-diagonal elements represents interactions between them.
+\begin{equation}\label{hamiltonian-vector}
+    \mathcal{H}=\begin{bmatrix}
+        \mathcal{H}_{11} & \mathcal{H}_{12} \\
+        \mathcal{H}_{21} & \mathcal{H}_{22}
+    \end{bmatrix}
+\end{equation}
+
+Furthermore, the Hamiltonian is decomposed into $\mathcal{H}=\mathcal{H}_0+\mathcal{H}_1$, with a solvable non-interacting component $\mathcal{H}_0$ and an interaction term $\mathcal{H}_1$. See \cref{H0-H1}, where $E_i$ represent the unperturbed energy levels and $V_{ij}$ describe interaction matrix elements.
+\begin{equation}\label{H0-H1}
+    \mathcal{H}_0=\begin{bmatrix}
+        E_1 & 0 \\
+        0 & E_2
+    \end{bmatrix}\quad
+    \mathcal{H}_1=\begin{bmatrix}
+        V_{11} & V_{12} \\
+        V_{21} & V_{22}
+    \end{bmatrix}
+\end{equation} 
+
+Any $2\times2$ Hamiltonian can be expressed using the Pauli operator basis together with the identity operator \parencite{scherer2019mathqc}. For the present system this leads to the identities seen in \cref{H0-H1-decomp} with \cref{mathcal-E-Omega}. 
+\begin{equation}\label{H0-H1-decomp}
+\begin{aligned}
+    &\mathcal{H}=a\textbf{I}+b\sigma_x+c\sigma_y+d\sigma_z\\
+    &\mathcal{H}_0 = \mathcal{E}\textbf{I} + \Omega\sigma_z \\
+    &\mathcal{H}_1 = c\textbf{I} + \omega_z\sigma_z + \omega_x\sigma_x
+\end{aligned}
+\end{equation}
+\begin{equation}\label{mathcal-E-Omega}
+    \mathcal{E}=\frac{E_1+E_2}{2} \quad \Omega=\frac{E_1-E_2}{2}
+\end{equation}
+
+Now, I can move on to the analytical eigenvalue solution, where the eigenvalues of the Hamiltonian are obtained from the characteristic equation in \cref{characteristic-equation}.
+\begin{equation}\label{characteristic-equation}
+    \det(\mathcal{H}-E\textbf{I})=0
+\end{equation}
+
+For a general $2\times2$ Hamiltonian in \cref{general-hamiltonian} the resulting energy eigenvalues can be found in \cref{energy-eigenvalues}. Using this, the lowest eigenvalue corresponds to the ground state energy of the system.
+\begin{equation}\label{general-hamiltonian}
+    \mathcal{H}=\begin{pmatrix}
+        a&b\\b&d
+    \end{pmatrix}
+\end{equation}
+\begin{equation}\label{energy-eigenvalues}
+    E_{\pm} = \frac{a+d}{2}\pm\sqrt{\left(\frac{a-d}{2}\right)^2+b^2}
+\end{equation} 
+
+To study the effects of interactions in \cref{hamilton-interaction}, the Hamiltonian is parametrised by a coupling parameter $\lambda\in[0,1]$, where the limits $\lambda=0$ and $\lambda=1$ correspond to the non-interacting and fully interacting systems respectively.
+\begin{equation}\label{hamilton-interaction}
+    \mathcal{H}=\mathcal{H}_0+\lambda \mathcal{H}_1
+\end{equation}
+
+The Hamiltonian is diagonalised numerically to obtain its eigenvalues and eigenvectors. For Hermitian matrices this is efficiently performed using the \texttt{numpy} package in \texttt{python}, as seen in \cref{lst:numpy-diagonalization}.\newline
+
+\begin{lstlisting}[
+caption={Diagonalization of the Hamiltonian matrix $\mathcal{H}$ using NumPy's \texttt{np.linalg.eigh}, which computes the eigenvalues and eigenvectors of a Hermitian operator. This routine is used as the classical baseline for validating the quantum variational results.},
+label={lst:numpy-diagonalization},
+captionpos=b
+]
+np.linalg.eigh(H)
+\end{lstlisting}
+
+\subsection{Variational Quantum Eigensolver (VQE)}
+
+VQE is based on the variational principle, for any normalised trial state $\ket{\psi(\theta)}$, the expectation value of the Hamiltonian provides an upper bound to the true ground state energy. The goal in using a VQE is therefore to minimize the energy expectation value with respect to the circuit parameter $\theta$ shown in \cref{minimum-expectation}. 
+\begin{equation}\label{minimum-expectation}
+    E_0\leq\min_\theta\bra{\psi(\theta)}\mathcal{H}\ket{\psi(\theta)}
+\end{equation}
+
+A parameterized quantum circuit $U(\theta)$ prepares a trial state from a simple initial computational basis state. By varying the parameters $\theta$, the circuit explores different candidate states in \cref{parameterized-psi}
+\begin{equation}\label{parameterized-psi}
+    \ket{\psi(\theta)}=U(\theta)\ket{0}^{\otimes n}
+\end{equation}
+
+To evaluate the energy on a quantum computer, the Hamiltonian is expressed as a weighted sum of tensor products of Pauli operators, in \cref{c-P-pauli}. Each term can then be measured separately on the quantum circuit, where $c_k$ are the real coefficients and $P_k$ are Pauli strings acting on the qubits.
+\begin{equation}\label{c-P-pauli}
+    \mathcal{H}=\sum_k c_kP_k 
+    \quad
+    P_k\in\{I,X,Y,Z\}^{\otimes n}
+\end{equation}
+
+The VQE cost function is the expectation value of the Hamiltonian with respect to the trial state. Using the Pauli decomposition, the energy can be written as a sum of expectation values of Pauli operators in \cref{E-theta-bra-psi}.
+\begin{equation}\label{E-theta-bra-psi}
+    E(\theta)=\bra{\psi(\theta)}\mathcal{H}\ket{\psi(\theta)} = \sum_k c_k \langle P_k \rangle_\theta
+\end{equation}
+
+A classical optimizer updates the circuit parameter iteratively in order to reduce the energy expectation value. Conceptually, this can be written as an update rule, where $\eta$ is a learning rate or step size, as in \cref{nabla-theta}.
+\begin{equation}\label{nabla-theta}
+    \theta_{t+1} = \theta_t - \eta\nabla_{\theta}E(\theta_t)
+\end{equation}
+
+After convergence, the optimal parameters $\theta^*$ define the approximate ground state prepared by the circuit. The estimated ground state energy is then shown in \cref{ground-state-E}.
+\begin{equation}\label{ground-state-E}
+    E_{\text{VQE}} = E(\theta)
+\end{equation}
+
+The choice of parameterized circuit $U(\theta)$ determines the family of states explored by the VQE and therefore strongly influences the quality of the variational solution. For a single qubit, a minimal ansatz consists of a single rotation gate is seen in \cref{ry-ansatz} and illustrated in \cref{fig:circuit-c}.
+\begin{equation}\label{ry-ansatz}
+\ket{\psi(\theta)} = R_y(\theta)\ket{0}
+= \cos\frac{\theta}{2}\ket{0} + \sin\frac{\theta}{2}\ket{1}.
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.35\linewidth]{figures/circuit_part_c.pdf}
+    \caption{Minimal ansatz on a single qubit}
+    \label{fig:circuit-c}
+\end{figure}
+
+For two qubits, a common hardware-efficient architecture combines single-qubit rotations with an entangling gate. A simple example is shown in \cref{two-qubit-ansatz} and \cref{fig:circuit-e}.
+\begin{equation}\label{two-qubit-ansatz}
+\ket{\psi(\boldsymbol{\theta})} =
+\big(R_y(\theta_3)\otimes R_y(\theta_4)\big)
+\,\mathrm{CNOT}\,
+\big(R_y(\theta_1)\otimes R_y(\theta_2)\big)\ket{00}.
+\end{equation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\linewidth]{figures/circuit_part_e.pdf}
+    \caption{A simple two-qubit hardware-efficient ansatz combining layers of parameterized $R_y$ rotations and a CNOT entangling gate, corresponding to \cref{two-qubit-ansatz}.}
+    \label{fig:circuit-e}
+\end{figure}
+
+\subsection{The Lipkin model}
+
+The Lipkin--Meshkov--Glick (LMG) model describes $N$ fermions distributed over two $N$-fold degenerate energy levels separated by an energy $\varepsilon$. In terms of quasispin operators the full Hamiltonian is $\mathcal{H}=\mathcal{H}_0+\mathcal{H}_1+\mathcal{H}_2$, written as in \cref{lipkin-hamiltonian}.
+\begin{equation}\label{lipkin-hamiltonian}
+    \mathcal{H} = \varepsilon J_z + \frac{1}{2}V(J_+^2 + J_-^2) + \frac{1}{2}W(-N + J_+J_- + J_-J_+)
+\end{equation}
+
+The operators $J_z, J_+, J_-$ satisfy the $\mathfrak{su}(2)$ algebra and act within the angular momentum sector $J=N/2$. The first term $\mathcal{H}_0$ represents the single-particle energy splitting. The second term $\mathcal{H}_1$ scatters pairs of particles between the two levels ($\Delta m = \pm 2$). The third term $\mathcal{H}_2$, controlled by $W$, describes a monopole--monopole scattering that shifts states within a level without changing the level occupancy. Setting $W=0$ recovers the simpler pair-scattering model used as the primary study case.
+
+To simulate the model on a quantum computer, the quasispin operators are mapped to Pauli operators acting on $N$ qubits. This yields the qubit Hamiltonian shown in \cref{lipkin-pauli-hamiltonian}.
+\begin{equation}\label{lipkin-pauli-hamiltonian}
+    \mathcal{H} =
+    \frac{\varepsilon}{2}\sum_{i=1}^{N} Z_i
+    +
+    \sum_{i<j}\left(\frac{V+W}{2}\, X_i X_j + \frac{W-V}{2}\, Y_i Y_j\right)
+\end{equation}
+
+The $V$ and $W$ terms both contribute to the $XX$ and $YY$ Pauli strings: the pair-scattering ($V$) drives $XX-YY$ while the monopole term ($W$) drives $XX+YY$, so the combined coefficients are $(V+W)/2$ and $(W-V)/2$ respectively. Setting $W=0$ recovers the pure $XX-YY$ structure. This Pauli representation allows the full Lipkin Hamiltonian to be directly evaluated within the VQE framework.
+
+\subsection{Implementation in \texttt{python}}
+
+All simulations and numerical verification routines were implemented in \texttt{python}. Linear algebra and numerical routines were handled using \texttt{numpy} and \texttt{scipy}, data handling with \texttt{pandas}, and visualization with \texttt{matplotlib} and \texttt{seaborn}. Quantum circuits and hybrid quantum–classical optimization were implemented using \texttt{PennyLane} and \texttt{Qiskit} \parencite{numpy,pennylane,qiskit}. Python has become a standard platform for numerical computing and quantum algorithm prototyping due to its extensive scientific ecosystem \parencite{pattanayak2021qmlpython,hundt2026qcp,hidary2019qcaa}.
+
+The full implementation and supporting code are available in the project repository \parencite{fys5419-repo}, with the development environment summarized in \cref{lst:python-environment} in the Appendix. Parts of the implementation follow examples and structures from the quantum machine learning teaching repository by \textcite{compphysics_qcml_repo}.
+
+\subsection{Use of AI-assisted development tools}
+
+AI-assisted programming tools were used during development for code generation, debugging, and documentation. These included large language models such as \texttt{ChatGPT} \parencite{chatgpt}, \texttt{Claude} \parencite{claude}, \texttt{Grok} \parencite{grok}, and \texttt{Gemini} \parencite{gemini}, as well as coding assistants such as \texttt{GitHub Copilot}, \texttt{Antigravity} and \texttt{Cursor} \parencite{copilot,google-antigravity,cursor}. 
+
+In writing this report, I downloaded \texttt{Claude Code} from Anthropic for the first time \parencite{anthropic_claude_code_docs}. This let me use an AI agent directly in my computer terminal. Moreso, I found that syncing the \texttt{Overleaf} \LaTeX project to \texttt{GitHub} and allowing \texttt{Claude Code} to access the project's Tex files, let me receive direct feedback from the AI agent. 

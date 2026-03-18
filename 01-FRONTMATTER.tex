@@ -1,0 +1,34 @@
+\twocolumn[
+\begin{@twocolumnfalse}
+\begin{center}
+{\Huge\bfseries A VQE Study of the Lipkin Interaction \par}
+\vspace{0.2cm}
+{\large FYS5419 -- Quantum computing and quantum machine learning \par}
+\vspace{0.2cm}
+{\large \textbf{PROJECT 1} \par}
+\vspace{0.2cm}
+\begin{minipage}{0.48\linewidth}
+\raggedright
+{\large Egil Furnes \par}
+\texttt{egilsf@uio.no} \par
+\href{https://github.com/egil10/fys5419}{\texttt{github.com/egil10/fys5419}}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\linewidth}
+\raggedleft
+University of Oslo \par
+Department of Physics \par
+\today
+\end{minipage}
+\end{center}
+\vspace{-1em}
+\begin{center}
+{\large\bfseries Abstract}
+\end{center}
+
+In this project, I study the Lipkin--Meshkov--Glick model using the Variational Quantum Eigensolver (VQE) algorithm on a sequence of increasingly complex quantum systems. Starting from single-qubit operations and Bell state entanglement, I progress through a two-level Hamiltonian with an avoided crossing, a two-qubit interacting system exhibiting interaction-driven entanglement, and finally the $J=1$ and $J=2$ Lipkin Hamiltonians mapped onto two and four qubits respectively. Classical diagonalization using \texttt{numpy.linalg.eigh} achieves machine-precision accuracy ($\approx10^{-15}$) and serves as the reference throughout. Hardware-efficient VQE circuits based on $R_y$ rotations and entangling gates reproduce exact ground state energies to $\approx10^{-11}$ for the two-level Hamiltonian and the Lipkin $J=1$ system. For the two-qubit Hamiltonian the VQE achieves machine precision for $\lambda\lesssim0.4$ but undergoes a branch-tracking failure at the avoided crossing, tracking the excited state with errors of $\approx10^{-1}$ beyond that point. For the $J=2$ Lipkin model the residual error is $\approx10^{-2}$, reflecting optimization in a high-dimensional symmetry-mixed landscape. Hartree-Fock results are included for comparison, and the onset of the quantum phase transition in the Lipkin model is clearly captured in both the classical and VQE spectra. All source code is available at the linked repository.
+
+\vspace{2em}
+
+\end{@twocolumnfalse}
+]
